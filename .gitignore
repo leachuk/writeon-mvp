@@ -1,0 +1,5 @@
+DerivedData/
+node_modules/
+bak/
+couchdb.*
+writeon-mvp.xcworkspace
