@@ -12,6 +12,7 @@
     "express-session": "^1.8.2",
     "nano": "^5.11.2",
     "passport": "^0.2.1",
+    "passport-local": "^1.0.0",
     "supervisor": "^0.6.0"
   },
   "devDependencies": {},

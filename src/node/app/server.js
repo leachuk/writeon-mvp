@@ -4,14 +4,18 @@ var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var RedisStore = require("connect-redis")(session);
 //var store = new express.session.MemoryStore;
+var passport = require("passport");
+var LocalStrategy = require("passport-local").Strategy;
+
 var app = express();
 
+//custom objects
 var requestHandlers = require("./requestHandlers");
 var couchDbUrl = "http://localhost:5984";
 var sessionSecret = "mysecret1235";
 
 
-//CORS Middleware
+//CORS Middleware. Still needed??
 var allowCrossDomain = function(request,response,next){
 
 	var allowedHost = [
@@ -29,6 +33,30 @@ var allowCrossDomain = function(request,response,next){
 	response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 	next();
 }
+//testing functions and data, to be replaced.
+var users = [
+    { id: 1, username: 'bob', password: 'secret', email: 'bob@example.com' }
+  , { id: 2, username: 'joe', password: 'birthday', email: 'joe@example.com' }
+];
+
+function findById(id, fn) {
+  var idx = id - 1;
+  if (users[idx]) {
+    fn(null, users[idx]);
+  } else {
+    fn(new Error('User ' + id + ' does not exist'));
+  }
+}
+
+function findByUsername(username, fn) {
+  for (var i = 0, len = users.length; i < len; i++) {
+    var user = users[i];
+    if (user.username === username) {
+      return fn(null, user);
+    }
+  }
+  return fn(null, null);
+}
 
 //Configure
 //TODO: enable environment specific config. look into process.env.NODE_ENV
@@ -36,6 +64,44 @@ app.use(allowCrossDomain);
 app.use(bodyParser());
 app.use(cookieParser());
 app.use(session({secret: sessionSecret, store: new RedisStore, cookie: {httpOnly: false}}));
+// Initialize Passport!  Also use passport.session() middleware, to support
+// persistent login sessions (recommended).
+app.use(passport.initialize());
+app.use(passport.session());
+//passport strategy
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    // asynchronous verification, for effect...
+    process.nextTick(function () {
+      
+      // Find the user by username.  If there is no user with the given
+      // username, or the password is not correct, set the user to `false` to
+      // indicate failure and set a flash message.  Otherwise, return the
+      // authenticated `user`.
+      findByUsername(username, function(err, user) {
+        if (err) { return done(err); }
+        if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
+        if (user.password != password) { return done(null, false, { message: 'Invalid password' }); }
+        return done(null, user);
+      })
+    });
+  }
+));
+// Passport session setup.
+//   To support persistent login sessions, Passport needs to be able to
+//   serialize users into and deserialize users out of the session.  Typically,
+//   this will be as simple as storing the user ID when serializing, and finding
+//   the user by ID when deserializing.
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  findById(id, function (err, user) {
+    done(err, user);
+  });
+});
+
 
 //API Routes
 /*
@@ -48,15 +114,33 @@ app.all("/*", function(request,response,next){
 });
 */
 
+// POST /login
+//   This is an alternative implementation that uses a custom callback to
+//   acheive the same functionality.
+//   curl -v -d "username=bob&password=secret" http://localhost:8888/logintest
+app.post("/logintest", function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err) }
+    if (!user) {
+      req.session.messages =  [info.message];
+      return res.send("not authenticated. Try again.\n");
+    }
+    req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      return res.send("authenticated. Hurrah.\n");
+    });
+  })(req, res, next);
+});
+
 app.get("/test1/:get1", requestHandlers.test1);
 
 app.post("/api/user/signup", requestHandlers.signupUser);
 
-app.post('/api/user/signin', function (req, res) {
+app.post("/api/user/signin", function (req, res) {
     console.log("Session:");
     console.log("Auth deets:"+ req.body.name + "," + req.body.password);
     
-    var nano = require('nano')({ url : couchDbUrl});
+    var nano = require("nano")({ url : couchDbUrl});
     var	username = req.body.name;
     var	userpass = req.body.password;
 //var username = "test4";
