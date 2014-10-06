@@ -1,17 +1,16 @@
 var express = require("express");
-var session = require('express-session')
-var cookieParser = require('cookie-parser')
-var bodyParser = require('body-parser')
+var session = require("express-session");
+var cookieParser = require("cookie-parser");
+var bodyParser = require("body-parser");
 var RedisStore = require("connect-redis")(session);
 //var store = new express.session.MemoryStore;
 var app = express();
-//var redis = require("redis").createClient();
+
 var requestHandlers = require("./requestHandlers");
 var couchDbUrl = "http://localhost:5984";
 var sessionSecret = "mysecret1235";
 
 
- 
 //CORS Middleware
 var allowCrossDomain = function(request,response,next){
 
@@ -32,7 +31,7 @@ var allowCrossDomain = function(request,response,next){
 }
 
 //Configure
-//TODO: enable environment specific config. look into process.env.NODE_ENV	
+//TODO: enable environment specific config. look into process.env.NODE_ENV
 app.use(allowCrossDomain);
 app.use(bodyParser());
 app.use(cookieParser());
@@ -50,8 +49,8 @@ app.all("/*", function(request,response,next){
 */
 
 app.get("/test1/:get1", requestHandlers.test1);
-app.post("/api/user/signup", requestHandlers.signupUser);
 
+app.post("/api/user/signup", requestHandlers.signupUser);
 
 app.post('/api/user/signin', function (req, res) {
     console.log("Session:");
@@ -110,7 +109,6 @@ app.get('/api/couchdb/testCouchSession', function (req, res) {
 });
 
 //testing routes.
-/*
 app.get('/api/user/authset/:value', function (req, res) {
 	console.log(req);
 	console.log("signed cookie.sid:" + req.signedCookies["connect.sid"]);
@@ -145,7 +143,6 @@ app.get('/api/docs/listall/:databasename', function(req, res){
 		res.send(body);
 	});
 });
-*/
 
 app.listen(8888);
 console.log("Server has started.");
