@@ -1,5 +1,11 @@
 //set couchdb admin name and password here
-var couchnano = require("nano")("http://admin:admin@localhost:5984");
+var nconf = require("nconf");
+nconf.argv().env().file({ file: "../config/config-dev.json" });
+
+var couchnano = require("nano")("http://" + nconf.get("config.couchdb.adminusername")
+                                          + ":" + nconf.get("config.couchdb.adminpassword")
+                                          + "@" + nconf.get("config.couchdb.hostname")
+                                          + ":" + nconf.get("config.couchdb.port"));
 
 function createNewUserDatabase(dbname,useremail,userpassword,response){
 //When a user signs up, create a new database for them and grant them r/w access

@@ -6,12 +6,16 @@ var RedisStore = require("connect-redis")(session);
 //var store = new express.session.MemoryStore;
 var passport = require("passport");
 var LocalStrategy = require("passport-local").Strategy;
+var nconf = require("nconf");
+nconf.argv().env()
+            .file({ file: "../config/config-dev.json" });
 
 var app = express();
 
 //custom objects
+var documentHandlers = require("./documentHandlers");
 var requestHandlers = require("./requestHandlers");
-var couchDbUrl = "http://localhost:5984";
+var couchDbUrl = "http://" + nconf.get("config.couchdb.hostname") + ":" + nconf.get("config.couchdb.port");
 var sessionSecret = "mysecret1235";
 
 
@@ -227,6 +231,9 @@ app.get('/api/docs/listall/:databasename', function(req, res){
 		res.send(body);
 	});
 });
+
+//DOCUMENT SPECIFIC ROUTES
+app.get("/api/docs/save/document/:name", documentHandlers.saveDocument);
 
 app.listen(8888);
 console.log("Server has started.");
