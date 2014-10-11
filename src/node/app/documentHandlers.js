@@ -13,22 +13,40 @@ var couchnano = require("nano")("http://" + nconf.get("config.couchdb.adminusern
 
 
 function saveDocument(req,res){
-    var articlesDb = couchnano.use("articles");
+    var db = couchnano.use("db_app_document");
     var docname = req.params.name;
+    var field1 = req.query.field;
+    var value1 = req.query.value;
+    console.log("node params. field["+ field1 +"], value["+ value1 +"]");
+    var returnbody = null;
+    db.atomic("example",
+        "in-place",
+        docname,
+        {field: "field", value: "foonew"},
+        function (error, response) {
+            if (error) {
+                console.log("update error");
+            }else{
+                returnbody = response;
+                console.log("update worked:");
+                console.log(response);
+            }
+        });
     
-    articlesDb.update = function(obj, key, callback) {
-     var db = this;
-     db.get(key, function (error, existing) { 
-      if(!error) obj._rev = existing._rev;
-      db.insert(obj, key, callback);
-     });
-    }
-    
-    articlesDb.update({title: 'The new one 3'}, docname, function(err, res) {
-     if (err) return console.log('No update!');
-     console.log('Updated!');
-    });
-    res.send("saved \n");
+    res.send(returnbody);
+//    db.update = function(obj, key, callback) {
+//     var db = this;
+//     db.get(key, function (error, existing) { 
+//      if(!error) obj._rev = existing._rev;
+//      db.insert(obj, key, callback);
+//     });
+//    }
+//    
+//    db.update({title: 'The new one 3'}, docname, function(err, res) {
+//     if (err) return console.log('No update!');
+//     console.log('Updated!');
+//    });
+//    res.send("saved \n");
 }
 
 exports.saveDocument = saveDocument;

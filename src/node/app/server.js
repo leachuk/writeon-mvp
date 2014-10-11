@@ -233,7 +233,7 @@ app.get('/api/docs/listall/:databasename', function(req, res){
 });
 
 //DOCUMENT SPECIFIC ROUTES
-app.get("/api/docs/save/document/:name", documentHandlers.saveDocument);
+app.put("/api/docs/save/document/:name", documentHandlers.saveDocument);
 
 app.listen(8888);
 console.log("Server has started.");
