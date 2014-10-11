@@ -1,12 +1,26 @@
 {
     "_id": "_design/example",
-    "_rev": "4-f48656f5e2889a74b76c7b548f5559e5",
+    "_rev": "6-202f50e01f5ee0f12096dd70786da246",
     "updates": {
-        "in-place": "function(doc, req) {log('req:');log(req);var jsonBody = JSON.parse(req.body);log(jsonBody.value);log(jsonBody['value']);var field = jsonBody.field;var value = jsonBody.value;var message = 'set '+field+' to '+value;doc[field] = value;return [doc, message];}"
+        "in-place": "function(doc, req) {
+            log('req:');
+            log(req);
+            var jsonBody = JSON.parse(req.body);
+            log(jsonBody.value);
+            log(jsonBody['value']);
+            var field = jsonBody.field;
+            var value = jsonBody.value;
+            var message = 'set '+field+' to '+value;
+            doc[field] = value;
+            return [doc, message];
+        }"
     },
-    "views": {
-        "foo": {
-            "map": "function(doc){ emit(doc._id, doc._rev)}"
+    "views" : {
+        "foo" : {
+            "map" : "function(doc){
+                        log('map function');
+                        emit(doc._id, doc._rev);
+            }"
         }
     }
 }
