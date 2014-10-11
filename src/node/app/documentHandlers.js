@@ -15,14 +15,14 @@ var couchnano = require("nano")("http://" + nconf.get("config.couchdb.adminusern
 function saveDocument(req,res){
     var db = couchnano.use("db_app_document");
     var docname = req.params.name;
-    var field1 = req.query.field;
-    var value1 = req.query.value;
-    console.log("node params. field["+ field1 +"], value["+ value1 +"]");
+    var fieldparam = req.query.field;
+    var valueparam = req.query.value;
+    console.log("node params. field["+ fieldparam +"], value["+ valueparam +"]");
     var returnbody = null;
     db.atomic("example",
         "in-place",
         docname,
-        {field: "field", value: "foonew"},
+        {field: fieldparam, value: valueparam},
         function (error, response) {
             if (error) {
                 console.log("update error");
