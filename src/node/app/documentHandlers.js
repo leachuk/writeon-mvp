@@ -22,7 +22,7 @@ function saveDocument(req,res){
     db.atomic("example",
         "in-place",
         docname,
-        {field: fieldparam, value: valueparam},
+        [{field: fieldparam, value: valueparam},{field: "field2", value: "field2foo"}],
         function (error, response) {
             if (error) {
                 console.log("update error");

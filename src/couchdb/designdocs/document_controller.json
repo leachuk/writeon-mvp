@@ -1,17 +1,34 @@
 {
     "_id": "_design/example",
-    "_rev": "6-202f50e01f5ee0f12096dd70786da246",
+    "_rev": "22-031ac9b6ab41b3870627f342ea13a084",
     "updates": {
         "in-place": "function(doc, req) {
             log('req:');
             log(req);
             var jsonBody = JSON.parse(req.body);
-            log(jsonBody.value);
-            log(jsonBody['value']);
-            var field = jsonBody.field;
-            var value = jsonBody.value;
-            var message = 'set '+field+' to '+value;
-            doc[field] = value;
+            log('jsonBody size:');
+            log(jsonBody.length);
+            var message = 'debug output';
+
+            var field = jsonBody[0].field;
+            var value = jsonBody[0].value;
+            log('set ' + field + ' to ' + value);
+        
+            if (jsonBody.length != 'undefined'){
+                for(i=0; i < jsonBody.length; i++){
+                    var field = jsonBody[i].field;
+                    var value = jsonBody[i].value;
+                    log('set ' + field + ' to ' + value);
+                    doc[field] = value;
+                }
+                var message = jsonBody.length + ' fields have been set';
+            }else{
+                var field = jsonBody.field;
+                var value = jsonBody.value;
+                var message = 'set '+field+' to '+value;
+                doc[field] = value;
+            }
+        
             return [doc, message];
         }"
     },
