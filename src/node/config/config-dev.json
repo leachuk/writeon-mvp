@@ -1,6 +1,6 @@
 {
     "config.couchdb.adminusername" : "admin",
     "config.couchdb.adminpassword" : "admin",
-    "config.couchdb.hostname" : "localhost",
+    "config.couchdb.hostname" : "127.0.0.1",
     "config.couchdb.port" : 5984
 }

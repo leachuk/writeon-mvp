@@ -10,6 +10,24 @@ var couchnano = require("nano")("http://" + nconf.get("config.couchdb.adminusern
                                           + "@" + nconf.get("config.couchdb.hostname")
                                           + ":" + nconf.get("config.couchdb.port"));
 
+function listDocument(req,res){
+    var dbname = req.params.db;
+    var db = couchnano.use(dbname);
+    var count = 0;
+    db.list(function(err, body) {
+        if (!err) {
+            body.rows.forEach(function(doc) {
+                console.log(doc);
+                count++;
+            });
+            res.send('list count['+ count +']\n');
+        }
+    });
+}
+
+function responseTest(req,res){
+    res.send('response test done\n');
+}
 
 
 function saveDocument(req,res){
@@ -50,3 +68,5 @@ function saveDocument(req,res){
 }
 
 exports.saveDocument = saveDocument;
+exports.listDocument = listDocument;
+exports.responseTest = responseTest;
