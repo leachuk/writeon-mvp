@@ -18,6 +18,9 @@ var requestHandlers = require("./requestHandlers");
 var couchDbUrl = "http://" + nconf.get("config.couchdb.hostname") + ":" + nconf.get("config.couchdb.port");
 var sessionSecret = "mysecret1235";
 
+//static files for libs
+app.use("/lib",express.static(__dirname + "/../../lib"));
+
 
 //CORS Middleware. Still needed??
 var allowCrossDomain = function(request,response,next){
@@ -92,7 +95,7 @@ passport.use(new LocalStrategy(
   }
 ));
 //configure views
-app.set('views', __dirname + '/../views');
+app.set('views', __dirname + '/../view');
 app.set('view engine', 'jade');
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
@@ -238,7 +241,11 @@ app.get('/api/docs/listall/:databasename', function(req, res){
 //DOCUMENT SPECIFIC ROUTES
 app.put("/api/docs/save/document/:name", documentHandlers.saveDocument);
 app.get("/api/docs/list/database/:db", documentHandlers.listDocument);
-app.get("/api/responsetest", documentHandlers.responseTest);
+app.get("/responsetest", documentHandlers.responseTest);
+app.get("/lib/angular/angular.min.js", function (req, res) {
+    console.log("get angular:" + __dirname);
+    res.sendFile("/lib/angular/angular.min.js");
+});
 
 
 app.listen(8888);
