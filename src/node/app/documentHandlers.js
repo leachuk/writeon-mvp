@@ -27,7 +27,9 @@ function listDocument(req,res){
 
 function responseTest(req,res){
     //res.send('response test done. Dir['+ __dirname +']\n');
+    //res.render("layout");
     res.render("index");
+    //res.render("template_global_js");
 }
 
 

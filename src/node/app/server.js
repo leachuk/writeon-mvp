@@ -7,6 +7,7 @@ var RedisStore = require("connect-redis")(session);
 var passport = require("passport");
 var LocalStrategy = require("passport-local").Strategy;
 var nconf = require("nconf");
+
 nconf.argv().env()
             .file({ file: "../config/config-dev.json" });
 
@@ -95,8 +96,10 @@ passport.use(new LocalStrategy(
   }
 ));
 //configure views
-app.set('views', __dirname + '/../view');
+//app.set('views', __dirname + '/../view');
+app.set('views', __dirname);
 app.set('view engine', 'jade');
+//app.set('view options', { layout: false });
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
 //   serialize users into and deserialize users out of the session.  Typically,
@@ -242,10 +245,6 @@ app.get('/api/docs/listall/:databasename', function(req, res){
 app.put("/api/docs/save/document/:name", documentHandlers.saveDocument);
 app.get("/api/docs/list/database/:db", documentHandlers.listDocument);
 app.get("/responsetest", documentHandlers.responseTest);
-app.get("/lib/angular/angular.min.js", function (req, res) {
-    console.log("get angular:" + __dirname);
-    res.sendFile("/lib/angular/angular.min.js");
-});
 
 
 app.listen(8888);
