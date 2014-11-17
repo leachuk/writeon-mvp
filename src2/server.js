@@ -97,7 +97,7 @@ passport.use(new LocalStrategy(
 ));
 //configure views
 //app.set('views', __dirname + '/../view');
-app.set('views', __dirname);
+app.set('views', __dirname + '/app/node/views/templates');
 app.set('view engine', 'jade');
 //app.set('view options', { layout: false });
 // Passport session setup.
